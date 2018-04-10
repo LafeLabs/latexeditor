@@ -2,10 +2,23 @@
 <html>
 <head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	<script>
+	MathJax.Hub.Config({
+		tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']],
+		processEscapes: true,
+		processClass: "mathjax",
+        ignoreClass: "no-mathjax"
+		}
+	});//			MathJax.Hub.Typeset();//tell Mathjax to update the math
+	</script>
 </head>
-<body>
+<body class="no-mathjax">
     
-<div id = "scrolldisplay"></div>    
+<div id = "scrolldisplay" class = "mathjax">
+    
+</div>    
     
 <div id = "linkscroll">
     <a href = "text2php.php" id = "text2phplink">text2php.php</a>
@@ -48,6 +61,8 @@
 
     <div class = "json file">json/object.txt</div>
 
+    <div class = "latex file">latex/document.txt</div>
+
 </div>
 
 <script>
@@ -57,6 +72,7 @@ httpc.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         filedata = this.responseText;
         editor.setValue(filedata);
+        MathJax.Hub.Typeset();//tell Mathjax to update the math
     }
 };
 httpc.open("GET", "fileloader.php?filename=" + currentFile, true);
@@ -73,8 +89,10 @@ for(var index = 0;index < files.length;index++){
                 editor.setValue(filedata);
                 var fileType = currentFile.split("/")[0]; 
                 var fileName = currentFile.split("/")[1];
-                if(fileType == "html" && fileName != "index.txt"){
+                if(fileType == "latex" && fileName != "index.txt"){
                     document.getElementById("scrolldisplay").innerHTML = editor.getSession().getValue();
+                        MathJax.Hub.Typeset();//tell Mathjax to update the math
+
                 }
             }
         };
@@ -110,6 +128,11 @@ for(var index = 0;index < files.length;index++){
             document.getElementById("namediv").style.color = "orange";
             document.getElementById("namediv").style.borderColor = "orange";
         }
+        if(this.classList[0] == "latex"){
+            editor.getSession().setMode("ace/mode/html");
+            document.getElementById("namediv").style.color = "white";
+            document.getElementById("namediv").style.borderColor = "white";
+        }
 
         document.getElementById("namediv").innerHTML = currentFile;
     }
@@ -132,8 +155,9 @@ document.getElementById("maineditor").onkeyup = function(){
     httpc.send("data="+data+"&filename="+currentFile);//send text to filesaver.php
     var fileType = currentFile.split("/")[0]; 
     var fileName = currentFile.split("/")[1];
-    if(fileType == "html" && fileName != "index.txt"){
+    if(fileType == "latex" && fileName != "index.txt"){
         document.getElementById("scrolldisplay").innerHTML = editor.getSession().getValue();
+            MathJax.Hub.Typeset();//tell Mathjax to update the math
     }
     
 }
@@ -185,6 +209,9 @@ body{
 }
 .json{
     color:orange;
+}
+.latex{
+    color:white;
 }
 
 .file{
